@@ -5,6 +5,7 @@
   "main": "build/index.js",
   "type": "module",
   "author": "Andrew Wei <andrew@ghozt.sh>",
+  "private": true,
   "scripts": {
     "start": "functions-framework --target=redirect",
     "clean": "rimraf build",
