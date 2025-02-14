@@ -6,30 +6,29 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    env:
-      GIT_AUTHOR_NAME: github-actions[bot]
-      GIT_AUTHOR_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
-      GIT_COMMITTER_NAME: github-actions[bot]
-      GIT_COMMITTER_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Build
         uses: andrewscwei/actions/node-build@v2
       - name: Release semantic version
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx semantic-release
       - name: Release major version
+        env:
+          GITHUB_USER: ${{ vars.GH_ACTIONS_BOT_USER }}
+          GITHUB_EMAIL: ${{ vars.GH_ACTIONS_BOT_EMAIL }}
         run: |
-          VERSION="$(git tag --points-at $(git rev-parse HEAD))"
+          VERSION="$(git tag --points-at ${{ github.sha }})"
 
           if [ -z $VERSION ]; then
             echo "No major version to publish" >> $GITHUB_STEP_SUMMARY
           else
             MAJOR_VERSION="$(cut -d '.' -f 1 <<< "$VERSION")"
 
-            git config user.name "${GIT_AUTHOR_NAME}"
-            git config user.email "${GIT_AUTHOR_EMAIL}"
+            git config user.name "${GITHUB_USER}"
+            git config user.email "${GITHUB_EMAIL}"
             git tag -fa ${MAJOR_VERSION} -m "Map ${MAJOR_VERSION} to ${VERSION}"
             git push origin ${MAJOR_VERSION} --force
 
@@ -45,5 +44,5 @@ jobs:
         with:
           success: ${{ needs.release.result == 'success' }}
           cancelled: ${{ needs.release.result == 'cancelled' }}
-          bot-token: ${{ secrets.TELEGRAM_DEVOPS_BOT_TOKEN }}
-          chat-id: ${{ secrets.TELEGRAM_DEVOPS_CHAT_ID }}
+          bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat-id: ${{ vars.TELEGRAM_CHAT_ID }}

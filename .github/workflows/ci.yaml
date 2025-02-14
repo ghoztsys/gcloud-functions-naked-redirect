@@ -22,5 +22,5 @@ jobs:
         with:
           success: ${{ needs.build.result == 'success' }}
           cancelled: ${{ needs.build.result == 'cancelled' }}
-          bot-token: ${{ secrets.TELEGRAM_DEVOPS_BOT_TOKEN }}
-          chat-id: ${{ secrets.TELEGRAM_DEVOPS_CHAT_ID }}
+          bot-token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat-id: ${{ vars.TELEGRAM_CHAT_ID }}
